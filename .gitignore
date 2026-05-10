@@ -20,3 +20,6 @@ dist/
 # Frontend
 frontend/build/
 frontend/.cache/
+
+# Markdown Docs
+*.md
