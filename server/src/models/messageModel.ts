@@ -44,3 +44,18 @@ export const getConversationMessagesWithDocuments = async (conversationId: strin
   const result = await pool.query(query, [conversationId, limit, offset]);
   return result.rows;
 };
+
+export const createMessage = async (
+  conversationId: string,
+  role: "user" | "ai",
+  content: string,
+  actionableInsights: any = null
+) => {
+  const query = `
+    INSERT INTO messages (conversation_id, role, content, actionable_insights)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;
+  `;
+  const result = await pool.query(query, [conversationId, role, content, actionableInsights]);
+  return result.rows[0];
+};

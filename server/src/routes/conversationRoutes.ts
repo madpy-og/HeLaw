@@ -10,7 +10,6 @@ import {
 
 const router = express.Router();
 
-// Apply authentication middleware to all routes in this router
 router.use(protectRoute);
 
 router.get("/", getConversations);

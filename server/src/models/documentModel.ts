@@ -19,3 +19,18 @@ export const createDocumentTable = async () => {
     throw error;
   }
 };
+
+export const createDocument = async (
+  messageId: string,
+  fileUrl: string,
+  fileType: "pdf" | "image",
+  fileName: string
+) => {
+  const query = `
+    INSERT INTO documents (message_id, file_url, file_type, file_name)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;
+  `;
+  const result = await pool.query(query, [messageId, fileUrl, fileType, fileName]);
+  return result.rows[0];
+};
