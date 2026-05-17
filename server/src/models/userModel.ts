@@ -18,3 +18,36 @@ export const createUserTable = async () => {
     throw error;
   }
 };
+
+export const findUserByEmail = async (email: string) => {
+  const query = "SELECT * FROM users WHERE email = $1";
+  const result = await pool.query(query, [email]);
+  return result.rows[0];
+};
+
+export const findUserById = async (id: string) => {
+  const query = "SELECT id, name, email, created_at FROM users WHERE id = $1";
+  const result = await pool.query(query, [id]);
+  return result.rows[0];
+};
+
+export const createUser = async (name: string, email: string, passwordHash: string) => {
+  const query = `
+    INSERT INTO users (name, email, password_hash)
+    VALUES ($1, $2, $3)
+    RETURNING id, name, email, created_at;
+  `;
+  const result = await pool.query(query, [name, email, passwordHash]);
+  return result.rows[0];
+};
+
+export const updateUser = async (id: string, name: string, email: string) => {
+  const query = `
+    UPDATE users
+    SET name = $1, email = $2
+    WHERE id = $3
+    RETURNING id, name, email, created_at;
+  `;
+  const result = await pool.query(query, [name, email, id]);
+  return result.rows[0];
+};
