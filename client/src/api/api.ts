@@ -1,18 +1,12 @@
 const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
-/**
- * Helper function for fetch requests.
- * Automatically adds 'credentials: "include"' for HTTP-Only Cookies.
- */
 async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${BASE_URL}${endpoint}`;
-  
+
   const headers: HeadersInit = {
     ...options.headers,
   };
 
-  // If the body is a string (JSON), set Content-Type to application/json.
-  // Note: We don't set Content-Type for FormData, the browser handles the boundary automatically.
   if (options.body && typeof options.body === 'string') {
     (headers as Record<string, string>)['Content-Type'] = 'application/json';
   }
@@ -20,7 +14,7 @@ async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}): P
   const response = await fetch(url, {
     ...options,
     headers,
-    credentials: 'include', // Penting agar token JWT (HTTP-Only Cookie) selalu dikirim
+    credentials: 'include',
   });
 
   let data;
@@ -42,29 +36,29 @@ async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}): P
 // 1. Auth API
 // ------------------------------------------------------------------
 export const authApi = {
-  register: (data: Record<string, any>) => 
+  register: (data: Record<string, any>) =>
     fetchApi('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-    
-  login: (data: Record<string, any>) => 
+
+  login: (data: Record<string, any>) =>
     fetchApi('/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-    
-  logout: () => 
+
+  logout: () =>
     fetchApi('/auth/logout', {
       method: 'POST',
     }),
-    
-  getMe: () => 
+
+  getMe: () =>
     fetchApi('/auth/me', {
       method: 'GET',
     }),
-    
-  updateMe: (data: Record<string, any>) => 
+
+  updateMe: (data: Record<string, any>) =>
     fetchApi('/auth/me', {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -75,29 +69,29 @@ export const authApi = {
 // 2. Conversations API
 // ------------------------------------------------------------------
 export const conversationsApi = {
-  getAll: (page = 1, limit = 20) => 
+  getAll: (page = 1, limit = 20) =>
     fetchApi(`/conversations?page=${page}&limit=${limit}`, {
       method: 'GET',
     }),
-    
-  create: (title?: string) => 
+
+  create: (title?: string) =>
     fetchApi('/conversations', {
       method: 'POST',
       body: JSON.stringify({ title }),
     }),
-    
-  getById: (id: string, page = 1, limit = 50) => 
+
+  getById: (id: string, page = 1, limit = 50) =>
     fetchApi(`/conversations/${id}?page=${page}&limit=${limit}`, {
       method: 'GET',
     }),
-    
-  update: (id: string, title: string) => 
+
+  update: (id: string, title: string) =>
     fetchApi(`/conversations/${id}`, {
       method: 'PUT',
       body: JSON.stringify({ title }),
     }),
-    
-  delete: (id: string) => 
+
+  delete: (id: string) =>
     fetchApi(`/conversations/${id}`, {
       method: 'DELETE',
     }),
@@ -114,7 +108,7 @@ export const messagesApi = {
   sendMessage: (conversationId: string, content: string, files?: FileList | File[]) => {
     const formData = new FormData();
     formData.append('content', content);
-    
+
     if (files) {
       const fileArray = Array.from(files);
       fileArray.forEach((file) => {
